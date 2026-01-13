@@ -137,3 +137,33 @@ export async function quoterApiRequestAllItems(
 export function buildQuoterFieldSelection(fields: string[]): string {
 	return fields.filter((f) => f.trim()).join(',');
 }
+
+/**
+ * Map n8n UI field names to Quoter API field names
+ * Handles camelCase to snake_case conversion and specific field mappings
+ */
+export function mapQuoterFields(fields: IDataObject, resource: string): IDataObject {
+	const mapped: IDataObject = {};
+
+	// Common field mappings for all resources
+	const fieldMap: { [key: string]: string } = {
+		quoteName: 'name',
+		customerId: 'customer_id',
+		templateId: 'template_id',
+		validUntil: 'valid_until',
+		// Add more mappings as needed
+	};
+
+	for (const [key, value] of Object.entries(fields)) {
+		// Skip undefined/null values
+		if (value === undefined || value === null || value === '') {
+			continue;
+		}
+
+		// Use mapped field name if available, otherwise use original
+		const mappedKey = fieldMap[key] || key;
+		mapped[mappedKey] = value;
+	}
+
+	return mapped;
+}
