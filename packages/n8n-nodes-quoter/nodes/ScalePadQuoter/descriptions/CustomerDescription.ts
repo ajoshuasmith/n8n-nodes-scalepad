@@ -179,4 +179,27 @@ export const customerFields: INodeProperties[] = [
 		default: 50,
 		description: 'Max number of results to return',
 	},
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['customer'],
+				operation: ['getAll'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Fields',
+				name: 'fields',
+				type: 'string',
+				default: '',
+				placeholder: 'id,name,email,phone',
+				description: 'Comma-separated list of fields to return. Improves performance.',
+			},
+		],
+	},
 ];
