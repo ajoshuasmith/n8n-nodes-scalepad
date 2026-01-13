@@ -10,6 +10,7 @@ import {
 	quoterApiRequest,
 	quoterApiRequestAllItems,
 	buildQuoterFieldSelection,
+	mapQuoterFields,
 } from '../shared/GenericFunctions';
 
 import { itemOperations, itemFields } from './descriptions/ItemDescription';
@@ -143,11 +144,14 @@ export class ScalePadQuoter implements INodeType {
 						const itemId = this.getNodeParameter('itemId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 
+						// Map camelCase fields to API format
+						const body = mapQuoterFields(updateFields, 'item');
+
 						const responseData = await quoterApiRequest.call(
 							this,
 							'PATCH',
 							`/items/${itemId}`,
-							updateFields,
+							body,
 						);
 						returnData.push({ json: responseData });
 					}
@@ -213,11 +217,14 @@ export class ScalePadQuoter implements INodeType {
 						const quoteId = this.getNodeParameter('quoteId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 
+						// Map camelCase fields to API format (quoteName -> name, etc.)
+						const body = mapQuoterFields(updateFields, 'quote');
+
 						const responseData = await quoterApiRequest.call(
 							this,
 							'PATCH',
 							`/quotes/${quoteId}`,
-							updateFields,
+							body,
 						);
 						returnData.push({ json: responseData });
 					}
@@ -279,11 +286,14 @@ export class ScalePadQuoter implements INodeType {
 						const customerId = this.getNodeParameter('customerId', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i) as IDataObject;
 
+						// Map camelCase fields to API format
+						const body = mapQuoterFields(updateFields, 'customer');
+
 						const responseData = await quoterApiRequest.call(
 							this,
 							'PATCH',
 							`/customers/${customerId}`,
-							updateFields,
+							body,
 						);
 						returnData.push({ json: responseData });
 					}

@@ -409,13 +409,26 @@ export class ScalePadCore implements INodeType {
 							qs.limit = this.getNodeParameter('limit', i);
 						}
 
-						// Apply filters from additionalFields
+						// Apply common filters
 						if (additionalFields.clientId) {
 							qs['filter[client_id]'] = `eq:${additionalFields.clientId}`;
 						}
 
 						if (additionalFields.status) {
 							qs['filter[status]'] = `eq:${additionalFields.status}`;
+						}
+
+						// Apply resource-specific filters
+						if (resource === 'hardwareAsset' && additionalFields.assetType) {
+							qs['filter[asset_type]'] = `eq:${additionalFields.assetType}`;
+						}
+
+						if (resource === 'member' && additionalFields.role) {
+							qs['filter[role]'] = `eq:${additionalFields.role}`;
+						}
+
+						if (resource === 'opportunity' && additionalFields.stage) {
+							qs['filter[stage]'] = `eq:${additionalFields.stage}`;
 						}
 
 						let responseData;
