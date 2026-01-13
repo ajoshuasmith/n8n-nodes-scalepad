@@ -250,10 +250,16 @@ export class ScalePadQuoter implements INodeType {
 
 					if (operation === 'getAll') {
 						const returnAll = this.getNodeParameter('returnAll', i);
+						const options = this.getNodeParameter('options', i) as IDataObject;
 						const qs: IDataObject = {};
 
 						if (!returnAll) {
 							qs.limit = this.getNodeParameter('limit', i);
+						}
+
+						if (options.fields) {
+							const fields = (options.fields as string).split(',').map((f) => f.trim());
+							qs.fields = buildQuoterFieldSelection(fields);
 						}
 
 						let responseData;
@@ -319,10 +325,16 @@ export class ScalePadQuoter implements INodeType {
 
 					if (operation === 'getAll') {
 						const returnAll = this.getNodeParameter('returnAll', i);
+						const options = this.getNodeParameter('options', i) as IDataObject;
 						const qs: IDataObject = {};
 
 						if (!returnAll) {
 							qs.limit = this.getNodeParameter('limit', i);
+						}
+
+						if (options.fields) {
+							const fields = (options.fields as string).split(',').map((f) => f.trim());
+							qs.fields = buildQuoterFieldSelection(fields);
 						}
 
 						let responseData;
