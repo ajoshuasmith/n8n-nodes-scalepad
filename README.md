@@ -1,306 +1,254 @@
-# n8n-nodes-scalepad
+# ScalePad n8n Community Nodes
 
-This is an n8n community node that provides comprehensive integration with ScalePad's suite of products:
+This monorepo contains two separate n8n community node packages for ScalePad's suite of MSP tools:
 
-- **ScalePad Core API** - Access operational and financial insights from PSA data
-- **Lifecycle Manager** - Manage hardware assets, warranties, and lifecycle tracking
-- **Quoter API** - Automate quote creation and management
+## Packages
 
-## Installation
+### 📦 [n8n-nodes-scalepad](./packages/n8n-nodes-scalepad)
 
-Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
+**ScalePad Core API + Lifecycle Manager**
 
-### npm
+Integrate with ScalePad's operational and financial insights platform. Access client data, contracts, tickets, hardware assets, and lifecycle management.
+
+- **Authentication**: API Key
+- **API Status**: Beta (Read-Only)
+- **Rate Limit**: 50 requests per 5 seconds
+- **Resources**: 9 (Clients, Contacts, Contracts, Hardware Assets, Hardware Lifecycle, Members, Opportunities, SaaS, Tickets)
 
 ```bash
 npm install n8n-nodes-scalepad
 ```
 
-### n8n
+[View Documentation →](./packages/n8n-nodes-scalepad/README.md)
 
-1. Go to **Settings > Community Nodes**
-2. Select **Install**
-3. Enter `n8n-nodes-scalepad` in **Enter npm package name**
-4. Agree to the [risks](https://docs.n8n.io/integrations/community-nodes/risks/) of using community nodes
-5. Select **Install**
+---
 
-After installation, restart n8n to load the new nodes.
+### 📦 [n8n-nodes-quoter](./packages/n8n-nodes-quoter)
 
-## Nodes
+**Quoter by ScalePad**
 
-This package contains two nodes:
+Automate quote creation and management. Full CRUD operations for items, quotes, customers, and templates.
 
-### 1. ScalePad Core
+- **Authentication**: OAuth 2.0
+- **API Status**: Full CRUD
+- **Rate Limit**: 5 requests per second
+- **Resources**: 4 (Items, Quotes, Customers, Templates)
 
-Interact with ScalePad Core API and Lifecycle Manager to access:
-
-**Resources:**
-- **Clients** - Retrieve client/customer information
-- **Contacts** - Access contact details
-- **Contracts** - Manage contract records
-- **Hardware Assets** - View hardware asset data
-- **Hardware Lifecycle** - Track hardware lifecycle and warranty information
-- **Members** - Access team member information
-- **Opportunities** - View sales opportunities
-- **SaaS** - Retrieve SaaS subscription data
-- **Tickets** - Access support ticket records
-
-**Operations:**
-- Get (retrieve single record by ID)
-- Get Many (retrieve multiple records with filtering and sorting)
-
-**Features:**
-- Automatic pagination handling (up to 200 records per request)
-- Advanced filtering with operators (equals, not equals, contains, greater than, less than)
-- Sorting capabilities (ascending/descending)
-- Rate limit handling (50 requests per 5 seconds)
-- Comprehensive error messages
-
-### 2. ScalePad Quoter
-
-Interact with ScalePad Quoter API for quote and customer management:
-
-**Resources:**
-- **Items** - Manage products and services
-- **Quotes** - Create and manage quotes
-- **Customers** - Manage customer records
-- **Templates** - Access quote templates
-
-**Operations:**
-- Create
-- Get (retrieve single record by ID)
-- Get Many (retrieve multiple records)
-- Update (partial updates using PATCH)
-- Delete
-
-**Features:**
-- Full CRUD operations
-- OAuth 2.0 authentication with automatic token refresh
-- Field selection for optimized API responses
-- Automatic pagination (up to 100 records per request)
-- Rate limit handling (5 requests per second)
-- Comprehensive error handling with Quoter-specific error codes
-
-## Credentials
-
-### ScalePad Core API
-
-**Authentication:** API Key
-
-**Setup:**
-1. Sign in to [ScalePad Hub](https://hub.scalepad.com)
-2. Navigate to **API (BETA)** in the top menu
-3. Create a new API key:
-   - Enter a descriptive name
-   - Set expiry (default: 2 years)
-   - Click **+ Generate**
-4. Copy the API key immediately (it won't be shown again)
-
-**Requirements:**
-- Administrator permissions
-- ScalePad Partner account
-
-**Configuration in n8n:**
-- **API Key**: Your generated API key
-- **Environment**: Production or Sandbox
-
-### ScalePad Quoter OAuth2 API
-
-**Authentication:** OAuth 2.0 Client Credentials
-
-**Setup:**
-1. Sign in to [Quoter](https://app.quoter.com)
-2. Navigate to **Account > API Keys** (requires Account Owner role)
-3. Generate OAuth credentials:
-   - Click **Create API Key**
-   - Save the Client ID and Client Secret
-4. Use these credentials in n8n
-
-**Requirements:**
-- Account Owner permissions
-- Access tokens are valid for 1 hour and refresh automatically
-
-**Configuration in n8n:**
-- **Client ID**: Your OAuth Client ID
-- **Client Secret**: Your OAuth Client Secret
-
-## Usage Examples
-
-### Example 1: Get All Clients with Active Contracts
-
-```
-Node: ScalePad Core
-Resource: Client
-Operation: Get Many
-Return All: true
-Additional Fields > Filter:
-  - Field: status
-  - Operator: equals
-  - Value: active
+```bash
+npm install n8n-nodes-quoter
 ```
 
-### Example 2: Create a Quote from Template
+[View Documentation →](./packages/n8n-nodes-quoter/README.md)
 
-```
-Node: ScalePad Quoter
-Resource: Quote
-Operation: Create
-Customer ID: {{$json["customer_id"]}}
-Quote Name: Monthly Services - {{$json["month"]}}
-Additional Fields:
-  - Template ID: {{$json["template_id"]}}
-  - Valid Until: {{$json["expiry_date"]}}
-```
+---
 
-### Example 3: Monitor Hardware Approaching End of Life
+## Why Two Packages?
 
-```
-Node: ScalePad Core
-Resource: Hardware Lifecycle
-Operation: Get Many
-Return All: true
-Additional Fields:
-  - EOL Status: approaching_eol
-```
+While both products are part of the ScalePad ecosystem, they have distinct characteristics:
 
-### Example 4: Bulk Update Item Prices
+| Aspect | ScalePad Core | Quoter |
+|--------|---------------|--------|
+| **Base URL** | api.scalepad.com | api.quoter.com |
+| **Authentication** | API Key | OAuth 2.0 |
+| **Operations** | Read-Only (Beta) | Full CRUD |
+| **Rate Limits** | 50 req/5 sec | 5 req/sec |
+| **Permissions** | Administrator | Account Owner |
 
-```
-Node 1: ScalePad Quoter - Get Many Items
-Node 2: Function - Calculate new prices
-Node 3: ScalePad Quoter - Update Item
-  Resource: Item
-  Operation: Update
-  Item ID: {{$json["id"]}}
-  Update Fields:
-    - Price: {{$json["new_price"]}}
+Separating them into independent packages provides:
+- ✅ Users can install only what they need
+- ✅ Independent versioning and updates
+- ✅ Cleaner separation of concerns
+- ✅ Follows n8n community best practices
+
+## Quick Start
+
+### Install Both Packages
+
+```bash
+# Install ScalePad Core
+npm install n8n-nodes-scalepad
+
+# Install Quoter
+npm install n8n-nodes-quoter
 ```
 
-## API Limits and Best Practices
+### Install via n8n Community Nodes
 
-### Rate Limits
+1. Go to **Settings > Community Nodes** in n8n
+2. Click **Install**
+3. Enter the package name:
+   - `n8n-nodes-scalepad` for ScalePad Core
+   - `n8n-nodes-quoter` for Quoter
+4. Click **Install**
+5. Restart n8n
 
-**ScalePad Core API:**
-- Limit: 50 requests per 5 seconds
-- The node automatically handles rate limit errors with descriptive messages
+## Features
 
-**Quoter API:**
-- Limit: 5 requests per second
-- Implement delays between bulk operations if needed
+### n8n-nodes-scalepad
 
-### Pagination
+- ✅ 9 ScalePad resources
+- ✅ Automatic cursor-based pagination
+- ✅ Advanced filtering and sorting
+- ✅ Hardware lifecycle tracking
+- ✅ Warranty and EOL monitoring
+- ✅ Client and ticket management
 
-**ScalePad Core:**
-- Maximum: 200 records per request
-- Uses cursor-based pagination
-- "Return All" option automatically handles pagination
+### n8n-nodes-quoter
 
-**Quoter:**
-- Maximum: 100 records per request
-- Uses page-based pagination
-- "Return All" option automatically handles pagination
+- ✅ Full CRUD operations
+- ✅ OAuth 2.0 with auto-refresh
+- ✅ Field selection for performance
+- ✅ Quote creation from templates
+- ✅ Customer management
+- ✅ Item and pricing automation
 
-### Performance Tips
+## Example Workflows
 
-1. **Use field selection** (Quoter API): Only request fields you need
-   ```
-   Options > Fields: id,name,price
-   ```
+### End-to-End Client Onboarding
 
-2. **Apply filters**: Reduce data transfer by filtering at the API level
-   ```
-   Additional Fields > Client ID: specific-client-id
-   ```
+Combine both nodes for comprehensive automation:
 
-3. **Limit results**: Use pagination limits for large datasets
+1. **ScalePad Core**: Get new client details
+2. **Quoter**: Create customer record
+3. **Quoter**: Generate welcome quote from template
+4. **ScalePad Core**: Monitor hardware lifecycle
+5. **Quoter**: Create quarterly service quotes
 
-4. **Batch operations**: Group related operations to minimize API calls
+### Hardware Lifecycle to Quote Automation
 
-## Error Handling
-
-Both nodes provide comprehensive error handling:
-
-### Common Errors
-
-**Authentication Errors (401):**
-- ScalePad Core: Check API key validity and expiration
-- Quoter: OAuth token may have expired - reconnect credentials
-
-**Rate Limit Errors (429):**
-- Implement delays between operations
-- Use "Return All" cautiously with large datasets
-
-**Not Found (404):**
-- Verify resource IDs
-- Ensure you have access to the requested resource
-
-**Validation Errors (400):**
-- Check required fields
-- Verify data formats (dates, numbers, etc.)
-
-### Error Response Format
-
-Errors include:
-- HTTP status code
-- Error message
-- Detailed description
-- Suggested resolution (when applicable)
+1. **ScalePad Core**: Get hardware approaching EOL
+2. **Function**: Calculate replacement costs
+3. **Quoter**: Create quote with replacement items
+4. **Notification**: Alert team of pending renewals
 
 ## Development
 
-### Build
+Each package is independently buildable and publishable.
+
+### Build a Package
 
 ```bash
+cd packages/n8n-nodes-scalepad
+npm install
 npm run build
 ```
 
-### Development Mode
+### Test Locally
 
 ```bash
-npm run dev
+cd packages/n8n-nodes-scalepad
+npm link
+cd ~/.n8n/nodes
+npm link n8n-nodes-scalepad
 ```
 
-### Linting
+Restart n8n to load the linked package.
+
+### Publish to npm
 
 ```bash
-npm run lint
-npm run lintfix
+cd packages/n8n-nodes-scalepad
+npm publish
+
+cd ../n8n-nodes-quoter
+npm publish
 ```
 
-### Format
+## Project Structure
 
-```bash
-npm run format
+```
+n8n-nodes-scalepad/
+├── packages/
+│   ├── n8n-nodes-scalepad/
+│   │   ├── credentials/
+│   │   │   └── ScalePadCoreApi.credentials.ts
+│   │   ├── nodes/
+│   │   │   ├── ScalePadCore/
+│   │   │   │   ├── ScalePadCore.node.ts
+│   │   │   │   ├── scalepad.svg
+│   │   │   │   └── descriptions/
+│   │   │   │       ├── ClientDescription.ts
+│   │   │   │       ├── ContactDescription.ts
+│   │   │   │       ├── ...
+│   │   │   └── shared/
+│   │   │       ├── GenericFunctions.ts
+│   │   │       └── types.ts
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── README.md
+│   │
+│   └── n8n-nodes-quoter/
+│       ├── credentials/
+│       │   └── ScalePadQuoterOAuth2Api.credentials.ts
+│       ├── nodes/
+│       │   ├── ScalePadQuoter/
+│       │   │   ├── ScalePadQuoter.node.ts
+│       │   │   ├── quoter.svg
+│       │   │   └── descriptions/
+│       │   │       ├── ItemDescription.ts
+│       │   │       ├── QuoteDescription.ts
+│       │   │       ├── ...
+│       │   └── shared/
+│       │       ├── GenericFunctions.ts
+│       │       └── types.ts
+│       ├── package.json
+│       ├── tsconfig.json
+│       └── README.md
+│
+├── LICENSE
+└── README.md (this file)
 ```
 
 ## Resources
 
-- [ScalePad Core API Documentation](https://developer.scalepad.com/)
-- [Quoter API Documentation](https://docs.quoter.com/api)
+### Documentation
+
+- [ScalePad Core API Docs](https://developer.scalepad.com/)
+- [Quoter API Docs](https://docs.quoter.com/api)
+- [n8n Community Nodes](https://docs.n8n.io/integrations/community-nodes/)
+
+### Support
+
+- **GitHub Issues**: [Report a bug](https://github.com/ajoshuasmith/n8n-nodes-scalepad/issues)
+- **ScalePad Community**: [community.scalepad.com](https://community.scalepad.com/)
+- **Quoter Support**: [support.quoter.com](https://support.quoter.com/)
+
+### Community
+
+- [n8n Community Forum](https://community.n8n.io/)
 - [ScalePad Community](https://community.scalepad.com/)
-- [n8n Community Nodes Documentation](https://docs.n8n.io/integrations/community-nodes/)
+
+## Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
 ## Version History
 
-### 1.0.0
+### 1.0.0 (Latest)
+
+**n8n-nodes-scalepad:**
 - Initial release
-- ScalePad Core API support (read-only operations)
+- ScalePad Core API support (read-only)
 - Lifecycle Manager integration
-- Quoter API support (full CRUD)
-- OAuth 2.0 and API Key authentication
-- Comprehensive error handling
+- 9 resources with filtering and sorting
 - Automatic pagination
-- Rate limit management
 
-## Support
-
-For issues, questions, or contributions:
-- GitHub Issues: [Report a bug](https://github.com/ajoshuasmith/n8n-nodes-scalepad/issues)
-- ScalePad Support: [community.scalepad.com](https://community.scalepad.com/)
+**n8n-nodes-quoter:**
+- Initial release
+- Full CRUD operations
+- OAuth 2.0 authentication
+- 4 resources with field selection
+- Automatic pagination
 
 ## License
 
-MIT
+[MIT](LICENSE)
 
 ## Author
 
@@ -308,4 +256,4 @@ ScalePad Community
 
 ---
 
-**Note:** ScalePad Core API is currently in beta with read-only access. Full CRUD operations will be available in future releases based on API updates.
+**Note**: Both packages are independently maintained. Check each package's README for specific documentation, features, and usage examples.
