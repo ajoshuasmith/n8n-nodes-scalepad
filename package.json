@@ -1,59 +1,59 @@
 {
-  "name": "n8n-nodes-scalepad",
-  "version": "1.0.0",
-  "description": "n8n community node for ScalePad Core API, Lifecycle Manager, and Quoter API",
-  "keywords": [
-    "n8n-community-node-package",
-    "n8n",
-    "scalepad",
-    "quoter",
-    "lifecycle-manager",
-    "msp"
-  ],
-  "license": "MIT",
-  "homepage": "https://github.com/ajoshuasmith/n8n-nodes-scalepad",
-  "author": {
-    "name": "ScalePad Community",
-    "email": "support@scalepad.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ajoshuasmith/n8n-nodes-scalepad.git"
-  },
-  "main": "index.js",
-  "scripts": {
-    "build": "tsc && gulp build:icons",
-    "dev": "tsc --watch",
-    "format": "prettier nodes credentials --write",
-    "lint": "eslint nodes credentials --ext .ts",
-    "lintfix": "eslint nodes credentials --ext .ts --fix",
-    "prepublishOnly": "npm run build && npm run lint"
-  },
-  "files": [
-    "dist"
-  ],
-  "n8n": {
-    "n8nNodesApiVersion": 1,
-    "credentials": [
-      "dist/credentials/ScalePadCoreApi.credentials.js",
-      "dist/credentials/ScalePadQuoterOAuth2Api.credentials.js"
-    ],
-    "nodes": [
-      "dist/nodes/ScalePadCore/ScalePadCore.node.js",
-      "dist/nodes/ScalePadQuoter/ScalePadQuoter.node.js"
-    ]
-  },
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "eslint": "^8.0.0",
-    "eslint-plugin-n8n-nodes-base": "^1.11.0",
-    "gulp": "^4.0.2",
-    "n8n-workflow": "^1.0.0",
-    "prettier": "^3.0.0",
-    "typescript": "^5.0.0"
-  },
-  "peerDependencies": {
-    "n8n-workflow": "*"
-  }
+	"name": "@joshuanode/n8n-nodes-scalepad",
+	"version": "0.0.2",
+	"description": "n8n community node for ScalePad Core API and Lifecycle Manager",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n",
+		"scalepad",
+		"lifecycle-manager",
+		"msp",
+		"psa"
+	],
+	"license": "MIT",
+	"homepage": "https://github.com/ajoshuasmith/n8n-nodes-scalepad",
+	"author": {
+		"name": "Joshua Smith"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ajoshuasmith/n8n-nodes-scalepad.git"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"main": "index.js",
+	"scripts": {
+		"build": "tsc && gulp build:icons",
+		"dev": "tsc --watch",
+		"format": "prettier nodes credentials --write",
+		"lint": "eslint nodes credentials",
+		"lintfix": "eslint nodes credentials --fix",
+		"prepublishOnly": "npm run build && npm run lint"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"credentials": [
+			"dist/credentials/ScalePadCoreApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/ScalePadCore/ScalePadCore.node.js"
+		]
+	},
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^5.62.0",
+		"@typescript-eslint/parser": "^5.45.0",
+		"eslint": "^8.29.0",
+		"eslint-plugin-n8n-nodes-base": "^1.11.0",
+		"gulp": "^4.0.2",
+		"n8n-workflow": "^1.0.0",
+		"prettier": "^2.7.1",
+		"typescript": "~5.5"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
 }

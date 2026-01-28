@@ -11,3 +11,5 @@ dist/
 .npmrc
 package-lock.json
 yarn.lock
+
+.npm-cache/

@@ -1,250 +1,213 @@
-# ScalePad n8n Community Nodes
+# n8n-nodes-scalepad
 
-This monorepo contains two separate n8n community node packages for ScalePad's suite of MSP tools:
+This is an n8n community node for **ScalePad Core API** and **Lifecycle Manager**. It provides comprehensive integration with ScalePad's operational and financial insights platform for MSPs.
 
-## Packages
+[Installation](#installation) | [Operations](#operations) | [Credentials](#credentials) | [Usage](#usage) | [Resources](#resources)
 
-### 📦 [n8n-nodes-scalepad](./packages/n8n-nodes-scalepad)
+## Installation
 
-**ScalePad Core API + Lifecycle Manager**
+Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-Integrate with ScalePad's operational and financial insights platform. Access client data, contracts, tickets, hardware assets, and lifecycle management.
+### Community Nodes (Recommended)
 
-- **Authentication**: API Key
-- **API Status**: Beta (Read-Only)
-- **Rate Limit**: 50 requests per 5 seconds
-- **Resources**: 9 (Clients, Contacts, Contracts, Hardware Assets, Hardware Lifecycle, Members, Opportunities, SaaS, Tickets)
+1. Go to **Settings > Community Nodes**
+2. Select **Install**
+3. Enter `@joshuanode/n8n-nodes-scalepad` in **Enter npm package name**
+4. Agree to the [risks](https://docs.n8n.io/integrations/community-nodes/risks/) of using community nodes
+5. Select **Install**
 
-```bash
-npm install n8n-nodes-scalepad
-```
+After installation, restart n8n to load the node.
 
-[View Documentation →](./packages/n8n-nodes-scalepad/README.md)
-
----
-
-### 📦 [n8n-nodes-quoter](./packages/n8n-nodes-quoter)
-
-**Quoter by ScalePad**
-
-Automate quote creation and management. Full CRUD operations for items, quotes, customers, and templates.
-
-- **Authentication**: OAuth 2.0
-- **API Status**: Full CRUD
-- **Rate Limit**: 5 requests per second
-- **Resources**: 4 (Items, Quotes, Customers, Templates)
+### Manual Installation
 
 ```bash
-npm install n8n-nodes-quoter
+npm install @joshuanode/n8n-nodes-scalepad
 ```
 
-[View Documentation →](./packages/n8n-nodes-quoter/README.md)
+## Operations
 
----
+This node provides access to the following ScalePad resources:
 
-## Why Two Packages?
+### Resources Available
 
-While both products are part of the ScalePad ecosystem, they have distinct characteristics:
+| Resource | Description | Operations |
+|----------|-------------|------------|
+| **Clients** | Client/customer information | Get, Get Many |
+| **Contacts** | Contact details | Get, Get Many |
+| **Contracts** | Contract records | Get, Get Many |
+| **Hardware Assets** | Hardware asset data | Get, Get Many |
+| **Hardware Lifecycle** | Lifecycle tracking, warranties, EOL status | Get, Get Many |
+| **Members** | Team member information | Get, Get Many |
+| **Opportunities** | Sales opportunities | Get, Get Many |
+| **SaaS** | SaaS subscription data | Get, Get Many |
+| **Tickets** | Support ticket records | Get, Get Many |
 
-| Aspect | ScalePad Core | Quoter |
-|--------|---------------|--------|
-| **Base URL** | api.scalepad.com | api.quoter.com |
-| **Authentication** | API Key | OAuth 2.0 |
-| **Operations** | Read-Only (Beta) | Full CRUD |
-| **Rate Limits** | 50 req/5 sec | 5 req/sec |
-| **Permissions** | Administrator | Account Owner |
+### Operations
 
-Separating them into independent packages provides:
-- ✅ Users can install only what they need
-- ✅ Independent versioning and updates
-- ✅ Cleaner separation of concerns
-- ✅ Follows n8n community best practices
+- **Get** - Retrieve a single record by ID
+- **Get Many** - Retrieve multiple records with filtering, sorting, and pagination
 
-## Quick Start
+### Features
 
-### Install Both Packages
+✅ **Automatic Pagination** - Handles up to 200 records per request with cursor-based pagination
+✅ **Advanced Filtering** - Filter with operators (eq, ne, contains, gt, lt)
+✅ **Sorting** - Sort results ascending or descending
+✅ **Rate Limit Handling** - Automatic handling of 50 req/5sec limit
+✅ **Comprehensive Error Messages** - Detailed error descriptions and resolutions
 
-```bash
-# Install ScalePad Core
-npm install n8n-nodes-scalepad
+## Credentials
 
-# Install Quoter
-npm install n8n-nodes-quoter
-```
+### Authentication: API Key
 
-### Install via n8n Community Nodes
+**Requirements:**
+- ScalePad Partner account
+- Administrator permissions
 
-1. Go to **Settings > Community Nodes** in n8n
-2. Click **Install**
-3. Enter the package name:
-   - `n8n-nodes-scalepad` for ScalePad Core
-   - `n8n-nodes-quoter` for Quoter
-4. Click **Install**
-5. Restart n8n
+**Setup Steps:**
 
-## Features
+1. Sign in to [ScalePad Hub](https://hub.scalepad.com)
+2. Navigate to **API (BETA)** in the top menu
+3. Click **+ Generate** to create a new API key
+4. Enter a descriptive name
+5. Set expiry (default: 2 years)
+6. Copy the API key immediately (won't be shown again)
 
-### n8n-nodes-scalepad
+**Configuration in n8n:**
 
-- ✅ 9 ScalePad resources
-- ✅ Automatic cursor-based pagination
-- ✅ Advanced filtering and sorting
-- ✅ Hardware lifecycle tracking
-- ✅ Warranty and EOL monitoring
-- ✅ Client and ticket management
+- **API Key**: Your generated API key
+- **Environment**:
+  - `Production` - https://api.scalepad.com
+  - `Sandbox` - https://api-sandbox.scalepad.com
 
-### n8n-nodes-quoter
+## Usage
 
-- ✅ Full CRUD operations
-- ✅ OAuth 2.0 with auto-refresh
-- ✅ Field selection for performance
-- ✅ Quote creation from templates
-- ✅ Customer management
-- ✅ Item and pricing automation
-
-## Example Workflows
-
-### End-to-End Client Onboarding
-
-Combine both nodes for comprehensive automation:
-
-1. **ScalePad Core**: Get new client details
-2. **Quoter**: Create customer record
-3. **Quoter**: Generate welcome quote from template
-4. **ScalePad Core**: Monitor hardware lifecycle
-5. **Quoter**: Create quarterly service quotes
-
-### Hardware Lifecycle to Quote Automation
-
-1. **ScalePad Core**: Get hardware approaching EOL
-2. **Function**: Calculate replacement costs
-3. **Quoter**: Create quote with replacement items
-4. **Notification**: Alert team of pending renewals
-
-## Development
-
-Each package is independently buildable and publishable.
-
-### Build a Package
-
-```bash
-cd packages/n8n-nodes-scalepad
-npm install
-npm run build
-```
-
-### Test Locally
-
-```bash
-cd packages/n8n-nodes-scalepad
-npm link
-cd ~/.n8n/nodes
-npm link n8n-nodes-scalepad
-```
-
-Restart n8n to load the linked package.
-
-### Publish to npm
-
-```bash
-cd packages/n8n-nodes-scalepad
-npm publish
-
-cd ../n8n-nodes-quoter
-npm publish
-```
-
-## Project Structure
+### Example 1: Get All Active Clients
 
 ```
-n8n-nodes-scalepad/
-├── packages/
-│   ├── n8n-nodes-scalepad/
-│   │   ├── credentials/
-│   │   │   └── ScalePadCoreApi.credentials.ts
-│   │   ├── nodes/
-│   │   │   ├── ScalePadCore/
-│   │   │   │   ├── ScalePadCore.node.ts
-│   │   │   │   ├── scalepad.svg
-│   │   │   │   └── descriptions/
-│   │   │   │       ├── ClientDescription.ts
-│   │   │   │       ├── ContactDescription.ts
-│   │   │   │       ├── ...
-│   │   │   └── shared/
-│   │   │       ├── GenericFunctions.ts
-│   │   │       └── types.ts
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-│   │   └── README.md
-│   │
-│   └── n8n-nodes-quoter/
-│       ├── credentials/
-│       │   └── ScalePadQuoterOAuth2Api.credentials.ts
-│       ├── nodes/
-│       │   ├── ScalePadQuoter/
-│       │   │   ├── ScalePadQuoter.node.ts
-│       │   │   ├── quoter.svg
-│       │   │   └── descriptions/
-│       │   │       ├── ItemDescription.ts
-│       │   │       ├── QuoteDescription.ts
-│       │   │       ├── ...
-│       │   └── shared/
-│       │       ├── GenericFunctions.ts
-│       │       └── types.ts
-│       ├── package.json
-│       ├── tsconfig.json
-│       └── README.md
-│
-├── LICENSE
-└── README.md (this file)
+Resource: Client
+Operation: Get Many
+Return All: true
+Additional Fields:
+  Filter:
+    - Field: status
+    - Operator: eq
+    - Value: active
 ```
+
+### Example 2: Monitor Hardware Approaching End of Life
+
+```
+Resource: Hardware Lifecycle
+Operation: Get Many
+Return All: true
+Additional Fields:
+  EOL Status: approaching_eol
+```
+
+### Example 3: Get Client's Open Tickets
+
+```
+Resource: Ticket
+Operation: Get Many
+Return All: false
+Limit: 50
+Additional Fields:
+  Client ID: {{$json["client_id"]}}
+  Status: open
+  Priority: high
+```
+
+### Example 4: List Expiring Warranties
+
+```
+Resource: Hardware Lifecycle
+Operation: Get Many
+Return All: true
+Additional Fields:
+  Warranty Status: expiring_soon
+```
+
+## API Limits
+
+### Rate Limits
+
+- **Limit**: 50 requests per 5 seconds
+- **Automatic Handling**: The node handles rate limit errors with descriptive messages
+- **Best Practice**: Use filters to reduce the number of requests needed
+
+### Pagination
+
+- **Maximum**: 200 records per request
+- **Type**: Cursor-based pagination
+- **Auto-pagination**: Enable "Return All" to automatically fetch all pages
+
+### Performance Tips
+
+1. **Use filters** to reduce data transfer
+   ```
+   Additional Fields > Client ID: specific-client-id
+   ```
+
+2. **Limit results** for large datasets
+   ```
+   Return All: false
+   Limit: 100
+   ```
+
+3. **Apply sorting** for ordered results
+   ```
+   Sort Field: created_at
+   Sort Direction: DESC
+   ```
+
+## Error Handling
+
+The node provides comprehensive error handling:
+
+| Error Code | Meaning | Resolution |
+|------------|---------|------------|
+| **401** | Authentication failed | Check API key validity and expiration |
+| **404** | Resource not found | Verify resource ID and access permissions |
+| **429** | Rate limit exceeded | Reduce request frequency or add delays |
+| **500** | Server error | Retry request or contact ScalePad support |
+
+All errors include:
+- HTTP status code
+- Error message
+- Detailed description
+- Suggested resolution
+
+## API Status
+
+**Current Status**: Beta (Read-Only)
+
+The ScalePad Core API is currently in beta with read-only access (GET operations only). Full CRUD operations (POST, PATCH, DELETE) will be available in future releases based on partner feedback.
 
 ## Resources
 
-### Documentation
-
-- [ScalePad Core API Docs](https://developer.scalepad.com/)
-- [Quoter API Docs](https://docs.quoter.com/api)
-- [n8n Community Nodes](https://docs.n8n.io/integrations/community-nodes/)
-
-### Support
-
-- **GitHub Issues**: [Report a bug](https://github.com/ajoshuasmith/n8n-nodes-scalepad/issues)
-- **ScalePad Community**: [community.scalepad.com](https://community.scalepad.com/)
-- **Quoter Support**: [support.quoter.com](https://support.quoter.com/)
-
-### Community
-
-- [n8n Community Forum](https://community.n8n.io/)
+- [ScalePad Core API Documentation](https://developer.scalepad.com/)
 - [ScalePad Community](https://community.scalepad.com/)
-
-## Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+- [n8n Documentation](https://docs.n8n.io/)
 
 ## Version History
 
-### 1.0.0 (Latest)
-
-**n8n-nodes-scalepad:**
+### 0.0.1
 - Initial release
 - ScalePad Core API support (read-only)
 - Lifecycle Manager integration
-- 9 resources with filtering and sorting
+- 9 resources with Get and Get Many operations
 - Automatic pagination
+- Advanced filtering and sorting
+- Comprehensive error handling
 
-**n8n-nodes-quoter:**
-- Initial release
-- Full CRUD operations
-- OAuth 2.0 authentication
-- 4 resources with field selection
-- Automatic pagination
+## Support
+
+- **GitHub Issues**: [Report a bug](https://github.com/ajoshuasmith/n8n-nodes-scalepad/issues)
+- **ScalePad Community**: [community.scalepad.com](https://community.scalepad.com/)
+
+## Contributing
+
+Contributions are welcome! If you'd like to help improve this node for the MSP community, feel free to open an issue or submit a pull request on [GitHub](https://github.com/ajoshuasmith/n8n-nodes-scalepad).
 
 ## License
 
@@ -252,8 +215,4 @@ Contributions are welcome! Please:
 
 ## Author
 
-ScalePad Community
-
----
-
-**Note**: Both packages are independently maintained. Check each package's README for specific documentation, features, and usage examples.
+Joshua Smith

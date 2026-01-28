@@ -8,7 +8,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:n8n-nodes-base/recommended',
+    'plugin:n8n-nodes-base/community',
   ],
   rules: {
     '@typescript-eslint/no-explicit-any': 'warn',

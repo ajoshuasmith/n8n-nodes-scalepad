@@ -19,22 +19,12 @@ export interface IScalePadCoreResponse {
 	};
 }
 
-export interface IQuoterResponse {
-	data: IDataObject[];
-	has_more?: boolean;
-}
-
-export interface IQuoterErrorResponse {
-	errors: IScalePadError[];
-}
-
 export type SortOrder = 'ASC' | 'DESC';
 
 export interface IPaginationOptions {
 	limit?: number;
 	offset?: number;
 	cursor?: string;
-	page?: number;
 }
 
 export interface IFilterOptions {
