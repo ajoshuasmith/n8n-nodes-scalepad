@@ -1,6 +1,6 @@
 # n8n-nodes-scalepad
 
-This is an n8n community node for **ScalePad Core API** and **Lifecycle Manager**. It provides comprehensive integration with ScalePad's operational and financial insights platform for MSPs.
+This is an n8n community node for the **ScalePad Core API**. It provides integration with ScalePad's operational and financial insights platform for MSPs.
 
 [Installation](#installation) | [Operations](#operations) | [Credentials](#credentials) | [Usage](#usage) | [Resources](#resources)
 
@@ -28,186 +28,106 @@ npm install @joshuanode/n8n-nodes-scalepad
 
 This node provides access to the following ScalePad resources:
 
-### Resources Available
-
-| Resource | Description | Operations |
+| Resource | API Endpoint | Operations |
 |----------|-------------|------------|
-| **Clients** | Client/customer information | Get, Get Many |
-| **Contacts** | Contact details | Get, Get Many |
-| **Contracts** | Contract records | Get, Get Many |
-| **Hardware Assets** | Hardware asset data | Get, Get Many |
-| **Hardware Lifecycle** | Lifecycle tracking, warranties, EOL status | Get, Get Many |
-| **Members** | Team member information | Get, Get Many |
-| **Opportunities** | Sales opportunities | Get, Get Many |
-| **SaaS** | SaaS subscription data | Get, Get Many |
-| **Tickets** | Support ticket records | Get, Get Many |
-
-### Operations
+| **Clients** | `/core/v1/clients` | Get, Get Many |
+| **Contacts** | `/core/v1/contacts` | Get, Get Many |
+| **Contracts** | `/core/v1/service/contracts` | Get, Get Many |
+| **Hardware Assets** | `/core/v1/assets/hardware` | Get, Get Many |
+| **Members** | `/core/v1/members` | Get, Get Many |
+| **Opportunities** | `/core/v1/opportunities` | Get, Get Many |
+| **SaaS** | `/core/v1/assets/saas` | Get, Get Many |
+| **Tickets** | `/core/v1/service/tickets` | Get, Get Many |
 
 - **Get** - Retrieve a single record by ID
-- **Get Many** - Retrieve multiple records with filtering, sorting, and pagination
+- **Get Many** - Retrieve multiple records with optional filtering and pagination
 
 ### Features
 
-✅ **Automatic Pagination** - Handles up to 200 records per request with cursor-based pagination
-✅ **Advanced Filtering** - Filter with operators (eq, ne, contains, gt, lt)
-✅ **Sorting** - Sort results ascending or descending
-✅ **Rate Limit Handling** - Automatic handling of 50 req/5sec limit
-✅ **Comprehensive Error Messages** - Detailed error descriptions and resolutions
+- Automatic cursor-based pagination (up to 200 records per page)
+- Filtering support per resource
+- Sorting support (clients)
+- Rate limit error handling (50 req/5sec)
+- Production and Sandbox environment support
 
 ## Credentials
 
-### Authentication: API Key
+### API Key Authentication
 
 **Requirements:**
 - ScalePad Partner account
 - Administrator permissions
 
-**Setup Steps:**
+**Setup:**
 
 1. Sign in to [ScalePad Hub](https://hub.scalepad.com)
 2. Navigate to **API (BETA)** in the top menu
 3. Click **+ Generate** to create a new API key
-4. Enter a descriptive name
-5. Set expiry (default: 2 years)
-6. Copy the API key immediately (won't be shown again)
+4. Copy the API key immediately (it won't be shown again)
 
-**Configuration in n8n:**
+**In n8n:**
 
 - **API Key**: Your generated API key
-- **Environment**:
-  - `Production` - https://api.scalepad.com
-  - `Sandbox` - https://api-sandbox.scalepad.com
+- **Environment**: `Production` or `Sandbox`
 
 ## Usage
 
-### Example 1: Get All Active Clients
+### Get All Clients
 
 ```
 Resource: Client
 Operation: Get Many
 Return All: true
-Additional Fields:
-  Filter:
-    - Field: status
-    - Operator: eq
-    - Value: active
 ```
 
-### Example 2: Monitor Hardware Approaching End of Life
+### Get a Client's Contacts
 
 ```
-Resource: Hardware Lifecycle
+Resource: Contact
 Operation: Get Many
-Return All: true
 Additional Fields:
-  EOL Status: approaching_eol
+  Client ID: <client-uuid>
 ```
 
-### Example 3: Get Client's Open Tickets
+### Get Open Tickets for a Client
 
 ```
 Resource: Ticket
 Operation: Get Many
-Return All: false
 Limit: 50
 Additional Fields:
-  Client ID: {{$json["client_id"]}}
+  Client ID: <client-uuid>
   Status: open
-  Priority: high
-```
-
-### Example 4: List Expiring Warranties
-
-```
-Resource: Hardware Lifecycle
-Operation: Get Many
-Return All: true
-Additional Fields:
-  Warranty Status: expiring_soon
 ```
 
 ## API Limits
 
-### Rate Limits
-
-- **Limit**: 50 requests per 5 seconds
-- **Automatic Handling**: The node handles rate limit errors with descriptive messages
-- **Best Practice**: Use filters to reduce the number of requests needed
-
-### Pagination
-
-- **Maximum**: 200 records per request
-- **Type**: Cursor-based pagination
-- **Auto-pagination**: Enable "Return All" to automatically fetch all pages
-
-### Performance Tips
-
-1. **Use filters** to reduce data transfer
-   ```
-   Additional Fields > Client ID: specific-client-id
-   ```
-
-2. **Limit results** for large datasets
-   ```
-   Return All: false
-   Limit: 100
-   ```
-
-3. **Apply sorting** for ordered results
-   ```
-   Sort Field: created_at
-   Sort Direction: DESC
-   ```
+| Limit | Value |
+|-------|-------|
+| Rate limit | 50 requests per 5 seconds |
+| Page size | Up to 200 records per request |
+| Pagination | Cursor-based (automatic with "Return All") |
 
 ## Error Handling
 
-The node provides comprehensive error handling:
-
-| Error Code | Meaning | Resolution |
-|------------|---------|------------|
-| **401** | Authentication failed | Check API key validity and expiration |
-| **404** | Resource not found | Verify resource ID and access permissions |
-| **429** | Rate limit exceeded | Reduce request frequency or add delays |
-| **500** | Server error | Retry request or contact ScalePad support |
-
-All errors include:
-- HTTP status code
-- Error message
-- Detailed description
-- Suggested resolution
+| Code | Meaning | Resolution |
+|------|---------|------------|
+| **401** | Authentication failed | Check API key validity |
+| **404** | Resource not found | Verify resource ID |
+| **429** | Rate limit exceeded | Reduce request frequency |
 
 ## API Status
 
-**Current Status**: Beta (Read-Only)
-
-The ScalePad Core API is currently in beta with read-only access (GET operations only). Full CRUD operations (POST, PATCH, DELETE) will be available in future releases based on partner feedback.
+The ScalePad Core API is currently in **beta** with **read-only** access (GET operations only).
 
 ## Resources
 
-- [ScalePad Core API Documentation](https://developer.scalepad.com/)
-- [ScalePad Community](https://community.scalepad.com/)
-- [n8n Documentation](https://docs.n8n.io/)
-
-## Version History
-
-### 0.0.1
-- Initial release
-- ScalePad Core API support (read-only)
-- Lifecycle Manager integration
-- 9 resources with Get and Get Many operations
-- Automatic pagination
-- Advanced filtering and sorting
-- Comprehensive error handling
-
-## Support
-
-- **GitHub Issues**: [Report a bug](https://github.com/ajoshuasmith/n8n-nodes-scalepad/issues)
-- **ScalePad Community**: [community.scalepad.com](https://community.scalepad.com/)
+- [ScalePad API Documentation](https://developer.scalepad.com/)
+- [n8n Community Nodes Documentation](https://docs.n8n.io/integrations/community-nodes/)
 
 ## Contributing
 
-Contributions are welcome! If you'd like to help improve this node for the MSP community, feel free to open an issue or submit a pull request on [GitHub](https://github.com/ajoshuasmith/n8n-nodes-scalepad).
+Contributions welcome. Open an issue or submit a pull request on [GitHub](https://github.com/ajoshuasmith/n8n-nodes-scalepad).
 
 ## License
 

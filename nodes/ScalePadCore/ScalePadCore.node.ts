@@ -19,10 +19,6 @@ import {
 	hardwareAssetOperations,
 	hardwareAssetFields,
 } from './descriptions/HardwareAssetDescription';
-import {
-	hardwareLifecycleOperations,
-	hardwareLifecycleFields,
-} from './descriptions/HardwareLifecycleDescription';
 import { memberOperations, memberFields } from './descriptions/MemberDescription';
 import { opportunityOperations, opportunityFields } from './descriptions/OpportunityDescription';
 import { saasOperations, saasFields } from './descriptions/SaasDescription';
@@ -79,10 +75,6 @@ export class ScalePadCore implements INodeType {
 						value: 'hardwareAsset',
 					},
 					{
-						name: 'Hardware Lifecycle',
-						value: 'hardwareLifecycle',
-					},
-					{
 						name: 'Member',
 						value: 'member',
 					},
@@ -109,8 +101,6 @@ export class ScalePadCore implements INodeType {
 			...contractFields,
 			...hardwareAssetOperations,
 			...hardwareAssetFields,
-			...hardwareLifecycleOperations,
-			...hardwareLifecycleFields,
 			...memberOperations,
 			...memberFields,
 			...opportunityOperations,
@@ -147,7 +137,7 @@ export class ScalePadCore implements INodeType {
 						const qs: IDataObject = {};
 
 						if (!returnAll) {
-							qs.limit = this.getNodeParameter('limit', i);
+							qs.page_size = this.getNodeParameter('limit', i);
 						}
 
 						// Handle filters
@@ -217,7 +207,7 @@ export class ScalePadCore implements INodeType {
 						const qs: IDataObject = {};
 
 						if (!returnAll) {
-							qs.limit = this.getNodeParameter('limit', i);
+							qs.page_size = this.getNodeParameter('limit', i);
 						}
 
 						if (additionalFields.clientId) {
@@ -260,7 +250,7 @@ export class ScalePadCore implements INodeType {
 						const responseData = await scalePadCoreApiRequest.call(
 							this,
 							'GET',
-							`/core/v1/tickets/${ticketId}`,
+							`/core/v1/service/tickets/${ticketId}`,
 						);
 						returnData.push({ json: responseData });
 					}
@@ -271,7 +261,7 @@ export class ScalePadCore implements INodeType {
 						const qs: IDataObject = {};
 
 						if (!returnAll) {
-							qs.limit = this.getNodeParameter('limit', i);
+							qs.page_size = this.getNodeParameter('limit', i);
 						}
 
 						if (additionalFields.clientId) {
@@ -291,7 +281,7 @@ export class ScalePadCore implements INodeType {
 							responseData = await scalePadCoreApiRequestAllItems.call(
 								this,
 								'GET',
-								'/core/v1/tickets',
+								'/core/v1/service/tickets',
 								{},
 								qs,
 							);
@@ -299,7 +289,7 @@ export class ScalePadCore implements INodeType {
 							const response = await scalePadCoreApiRequest.call(
 								this,
 								'GET',
-								'/core/v1/tickets',
+								'/core/v1/service/tickets',
 								{},
 								qs,
 							);
@@ -312,71 +302,13 @@ export class ScalePadCore implements INodeType {
 					}
 				}
 
-				if (resource === 'hardwareLifecycle') {
-					if (operation === 'get') {
-						const recordId = this.getNodeParameter('recordId', i) as string;
-						const responseData = await scalePadCoreApiRequest.call(
-							this,
-							'GET',
-							`/core/v1/hardware-lifecycle/${recordId}`,
-						);
-						returnData.push({ json: responseData });
-					}
-
-					if (operation === 'getAll') {
-						const returnAll = this.getNodeParameter('returnAll', i);
-						const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
-						const qs: IDataObject = {};
-
-						if (!returnAll) {
-							qs.limit = this.getNodeParameter('limit', i);
-						}
-
-						if (additionalFields.clientId) {
-							qs['filter[client_id]'] = `eq:${additionalFields.clientId}`;
-						}
-
-						if (additionalFields.warrantyStatus) {
-							qs['filter[warranty_status]'] = `eq:${additionalFields.warrantyStatus}`;
-						}
-
-						if (additionalFields.eolStatus) {
-							qs['filter[eol_status]'] = `eq:${additionalFields.eolStatus}`;
-						}
-
-						let responseData;
-						if (returnAll) {
-							responseData = await scalePadCoreApiRequestAllItems.call(
-								this,
-								'GET',
-								'/core/v1/hardware-lifecycle',
-								{},
-								qs,
-							);
-						} else {
-							const response = await scalePadCoreApiRequest.call(
-								this,
-								'GET',
-								'/core/v1/hardware-lifecycle',
-								{},
-								qs,
-							);
-							responseData = response.data || [];
-						}
-
-						responseData.forEach((item: IDataObject) => {
-							returnData.push({ json: item });
-						});
-					}
-				}
-
-				// Similar implementations for other resources
+				// Resources using the shared resourceMap pattern
 				const resourceMap: { [key: string]: string } = {
-					contract: 'contracts',
-					hardwareAsset: 'hardware-assets',
+					contract: 'service/contracts',
+					hardwareAsset: 'assets/hardware',
 					member: 'members',
 					opportunity: 'opportunities',
-					saas: 'saas',
+					saas: 'assets/saas',
 				};
 
 				if (Object.keys(resourceMap).includes(resource)) {
@@ -405,7 +337,7 @@ export class ScalePadCore implements INodeType {
 						const qs: IDataObject = {};
 
 						if (!returnAll) {
-							qs.limit = this.getNodeParameter('limit', i);
+							qs.page_size = this.getNodeParameter('limit', i);
 						}
 
 						// Apply common filters

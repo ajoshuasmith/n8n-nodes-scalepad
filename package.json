@@ -1,6 +1,6 @@
 {
 	"name": "@joshuanode/n8n-nodes-scalepad",
-	"version": "0.0.2",
+	"version": "0.0.4",
 	"description": "n8n community node for ScalePad Core API and Lifecycle Manager",
 	"keywords": [
 		"n8n-community-node-package",

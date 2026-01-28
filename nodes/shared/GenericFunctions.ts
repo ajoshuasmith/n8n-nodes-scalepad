@@ -80,9 +80,9 @@ export async function scalePadCoreApiRequestAllItems(
 	let cursor: string | undefined;
 	let hasMore = true;
 
-	// Set default limit if not specified
-	if (!qs.limit) {
-		qs.limit = 200; // Maximum allowed by API
+	// Set default page size if not specified
+	if (!qs.page_size) {
+		qs.page_size = 200; // Maximum allowed by API
 	}
 
 	while (hasMore) {
@@ -97,7 +97,7 @@ export async function scalePadCoreApiRequestAllItems(
 		}
 
 		// Check for cursor-based pagination
-		cursor = response.meta?.pagination?.cursor;
+		cursor = response.next_cursor;
 		hasMore = !!cursor;
 
 		// Safety check to prevent infinite loops

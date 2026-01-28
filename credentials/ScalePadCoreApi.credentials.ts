@@ -56,9 +56,6 @@ export class ScalePadCoreApi implements ICredentialType {
 			baseURL: '={{$credentials.environment === "production" ? "https://api.scalepad.com" : "https://api-sandbox.scalepad.com"}}',
 			url: '/core/v1/clients',
 			method: 'GET',
-			qs: {
-				limit: 1,
-			},
 		},
 	};
 }
