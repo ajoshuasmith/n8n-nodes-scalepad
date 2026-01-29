@@ -1,6 +1,6 @@
 import { INodeProperties } from 'n8n-workflow';
 
-export const contractOperations: INodeProperties[] = [
+export const lmContractOperations: INodeProperties[] = [
 	{
 		displayName: 'Operation',
 		name: 'operation',
@@ -8,7 +8,7 @@ export const contractOperations: INodeProperties[] = [
 		noDataExpression: true,
 		displayOptions: {
 			show: {
-				resource: ['contract'],
+				resource: ['lmContract'],
 			},
 		},
 		options: [
@@ -47,7 +47,7 @@ export const contractOperations: INodeProperties[] = [
 	},
 ];
 
-export const contractFields: INodeProperties[] = [
+export const lmContractFields: INodeProperties[] = [
 	// Contract ID for get/update/delete operations
 	{
 		displayName: 'Contract ID',
@@ -56,7 +56,7 @@ export const contractFields: INodeProperties[] = [
 		required: true,
 		displayOptions: {
 			show: {
-				resource: ['contract'],
+				resource: ['lmContract'],
 				operation: ['get', 'update', 'delete'],
 			},
 		},
@@ -72,7 +72,7 @@ export const contractFields: INodeProperties[] = [
 		required: true,
 		displayOptions: {
 			show: {
-				resource: ['contract'],
+				resource: ['lmContract'],
 				operation: ['create'],
 			},
 		},
@@ -86,7 +86,7 @@ export const contractFields: INodeProperties[] = [
 		required: true,
 		displayOptions: {
 			show: {
-				resource: ['contract'],
+				resource: ['lmContract'],
 				operation: ['create'],
 			},
 		},
@@ -101,7 +101,7 @@ export const contractFields: INodeProperties[] = [
 		default: {},
 		displayOptions: {
 			show: {
-				resource: ['contract'],
+				resource: ['lmContract'],
 				operation: ['create'],
 			},
 		},
@@ -185,7 +185,7 @@ export const contractFields: INodeProperties[] = [
 		default: {},
 		displayOptions: {
 			show: {
-				resource: ['contract'],
+				resource: ['lmContract'],
 				operation: ['update'],
 			},
 		},
@@ -274,7 +274,7 @@ export const contractFields: INodeProperties[] = [
 		type: 'boolean',
 		displayOptions: {
 			show: {
-				resource: ['contract'],
+				resource: ['lmContract'],
 				operation: ['getAll'],
 			},
 		},
@@ -287,7 +287,7 @@ export const contractFields: INodeProperties[] = [
 		type: 'number',
 		displayOptions: {
 			show: {
-				resource: ['contract'],
+				resource: ['lmContract'],
 				operation: ['getAll'],
 				returnAll: [false],
 			},
@@ -307,7 +307,7 @@ export const contractFields: INodeProperties[] = [
 		default: {},
 		displayOptions: {
 			show: {
-				resource: ['contract'],
+				resource: ['lmContract'],
 				operation: ['getAll'],
 			},
 		},

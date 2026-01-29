@@ -1,6 +1,6 @@
 # n8n-nodes-scalepad
 
-This is an n8n community node for the **ScalePad Core API**. It provides integration with ScalePad's operational and financial insights platform for MSPs.
+This is an n8n community node for **ScalePad**. It provides integration with both the **Core API** and **Lifecycle Manager API** for MSPs.
 
 [Installation](#installation) | [Operations](#operations) | [Credentials](#credentials) | [Usage](#usage) | [Resources](#resources)
 
@@ -26,29 +26,44 @@ npm install @joshuanode/n8n-nodes-scalepad
 
 ## Operations
 
-This node provides access to the following ScalePad resources:
+This node provides access to both ScalePad Core API and Lifecycle Manager API resources.
 
-| Resource | API Endpoint | Operations |
-|----------|-------------|------------|
-| **Clients** | `/core/v1/clients` | Get, Get Many |
-| **Contacts** | `/core/v1/contacts` | Get, Get Many |
-| **Contracts** | `/core/v1/service/contracts` | Get, Get Many |
-| **Hardware Assets** | `/core/v1/assets/hardware` | Get, Get Many |
-| **Members** | `/core/v1/members` | Get, Get Many |
-| **Opportunities** | `/core/v1/opportunities` | Get, Get Many |
-| **SaaS** | `/core/v1/assets/saas` | Get, Get Many |
-| **Tickets** | `/core/v1/service/tickets` | Get, Get Many |
+### Core API Resources
 
-- **Get** - Retrieve a single record by ID
-- **Get Many** - Retrieve multiple records with optional filtering and pagination
+| Resource | Operations |
+|----------|------------|
+| **Client** | Get, Get Many |
+| **Contact** | Get, Get Many |
+| **Contract (Core)** | Get, Get Many |
+| **Hardware Asset** | Get, Get Many |
+| **Member** | Get, Get Many |
+| **Opportunity** | Get, Get Many |
+| **SaaS** | Get, Get Many |
+| **Ticket** | Get, Get Many |
+
+### Lifecycle Manager Resources
+
+| Resource | Operations |
+|----------|------------|
+| **Action Item** | Create, Get, Get Many, Update, Delete, Toggle Completion |
+| **Assessment** | Create, Get, Get Many, Update, Delete, Update Completion, Evaluate |
+| **Assessment Template** | Get Many |
+| **Contract (Lifecycle)** | Create, Get, Get Many, Update, Delete |
+| **Goal** | Create, Get, Get Many, Update, Delete, Update Status, Update Schedule, Link/Unlink Meetings, Link/Unlink Initiatives |
+| **Hardware Lifecycle** | Get Many |
+| **Initiative** | Create, Get, Get Many, Update, Delete, Update Status/Schedule/Priority/Budget, Link/Unlink Meetings, Link/Unlink Goals, Link/Unlink Action Items |
+| **Meeting** | Create, Get, Get Many, Update, Delete, Update Completion, Add/Remove Attendees, Link/Unlink Initiatives, Link/Unlink Goals, Link/Unlink Action Items |
+| **Note** | Create, Get, Get Many, Update, Toggle Archive |
 
 ### Features
 
+- Full CRUD operations for Lifecycle Manager resources
 - Automatic cursor-based pagination (up to 200 records per page)
 - Filtering support per resource
 - Sorting support (clients)
 - Rate limit error handling (50 req/5sec)
 - Production and Sandbox environment support
+- Link/unlink relationships between meetings, initiatives, goals, and action items
 
 ## Credentials
 
@@ -70,6 +85,8 @@ This node provides access to the following ScalePad resources:
 - **API Key**: Your generated API key
 - **Environment**: `Production` or `Sandbox`
 
+The same API key provides access to both Core API and Lifecycle Manager API.
+
 ## Usage
 
 ### Get All Clients
@@ -80,24 +97,33 @@ Operation: Get Many
 Return All: true
 ```
 
-### Get a Client's Contacts
+### Create a Meeting
 
 ```
-Resource: Contact
+Resource: Meeting
+Operation: Create
+Client ID: <client-uuid>
+Title: Quarterly Business Review
+Scheduled At: 2024-03-15T10:00:00Z
+```
+
+### Get Action Items for a Client
+
+```
+Resource: Action Item
 Operation: Get Many
-Additional Fields:
+Filters:
   Client ID: <client-uuid>
+  Is Completed: false
 ```
 
-### Get Open Tickets for a Client
+### Link an Initiative to a Meeting
 
 ```
-Resource: Ticket
-Operation: Get Many
-Limit: 50
-Additional Fields:
-  Client ID: <client-uuid>
-  Status: open
+Resource: Meeting
+Operation: Link Initiative
+Meeting ID: <meeting-uuid>
+Initiative ID: <initiative-uuid>
 ```
 
 ## API Limits
@@ -115,10 +141,6 @@ Additional Fields:
 | **401** | Authentication failed | Check API key validity |
 | **404** | Resource not found | Verify resource ID |
 | **429** | Rate limit exceeded | Reduce request frequency |
-
-## API Status
-
-The ScalePad Core API is currently in **beta** with **read-only** access (GET operations only).
 
 ## Resources
 
