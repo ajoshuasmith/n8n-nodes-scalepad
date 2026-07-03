@@ -7,7 +7,7 @@ import {
 	NodeOperationError,
 	JsonObject,
 	IHttpRequestMethods,
-	IRequestOptions,
+	IHttpRequestOptions,
 } from 'n8n-workflow';
 
 /**
@@ -27,16 +27,16 @@ export async function scalePadCoreApiRequest(
 			? 'https://api.scalepad.com'
 			: 'https://api-sandbox.scalepad.com';
 
-	const options: IRequestOptions = {
+	const options: IHttpRequestOptions = {
 		method,
 		body,
 		qs,
-		uri: `${baseUrl}${endpoint}`,
+		url: `${baseUrl}${endpoint}`,
 		json: true,
 	};
 
 	try {
-		return await this.helpers.requestWithAuthentication.call(this, 'scalePadCoreApi', options);
+		return await this.helpers.httpRequestWithAuthentication.call(this, 'scalePadCoreApi', options);
 	} catch (error: any) {
 		// Handle rate limiting with exponential backoff
 		if (error.statusCode === 429) {

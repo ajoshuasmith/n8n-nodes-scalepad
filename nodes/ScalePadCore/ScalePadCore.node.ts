@@ -1,9 +1,11 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import {
+	INode,
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
 	IDataObject,
+	NodeOperationError,
 } from 'n8n-workflow';
 
 import {
@@ -47,6 +49,33 @@ import {
 	lmContractOperations,
 	lmContractFields,
 } from './descriptions/LmContractDescription';
+
+function parseJsonObject(value: string, label: string, node: INode): IDataObject {
+	const trimmed = value.trim();
+	if (!trimmed) {
+		return {};
+	}
+
+	try {
+		const parsed = JSON.parse(trimmed) as unknown;
+		if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+			throw new Error(`${label} must be a JSON object`);
+		}
+		return parsed as IDataObject;
+	} catch (error) {
+		throw new NodeOperationError(node, `Invalid JSON in ${label}: ${(error as Error).message}`);
+	}
+}
+
+function normalizeApiPath(path: string): string {
+	if (!path.startsWith('/')) {
+		throw new Error('API path must start with /. Full external URLs are not allowed.');
+	}
+	if (path.startsWith('//') || path.includes('://')) {
+		throw new Error('API path must be relative to the ScalePad API base URL.');
+	}
+	return path;
+}
 
 export class ScalePadCore implements INodeType {
 	description: INodeTypeDescription = {
@@ -93,12 +122,17 @@ export class ScalePadCore implements INodeType {
 						value: 'assessment',
 						description: 'Lifecycle Manager: Client assessments',
 					},
-					{
-						name: 'Assessment Template',
-						value: 'assessmentTemplate',
-						description: 'Lifecycle Manager: Assessment templates',
-					},
-					// Core API resources
+						{
+							name: 'Assessment Template',
+							value: 'assessmentTemplate',
+							description: 'Lifecycle Manager: Assessment templates',
+						},
+						{
+							name: 'API Request',
+							value: 'apiRequest',
+							description: 'Call any ScalePad public API endpoint by path',
+						},
+						// Core API resources
 					{
 						name: 'Client',
 						value: 'client',
@@ -169,10 +203,88 @@ export class ScalePadCore implements INodeType {
 						value: 'ticket',
 						description: 'Core API: Service tickets',
 					},
-				],
-				default: 'client',
-			},
-			// Core API operations and fields
+					],
+					default: 'client',
+				},
+				{
+					displayName: 'Operation',
+					name: 'operation',
+					type: 'options',
+					noDataExpression: true,
+					displayOptions: {
+						show: {
+							resource: ['apiRequest'],
+						},
+					},
+					options: [
+						{
+							name: 'Request',
+							value: 'request',
+							action: 'Make an API request',
+						},
+					],
+					default: 'request',
+				},
+				{
+					displayName: 'Method',
+					name: 'apiMethod',
+					type: 'options',
+					displayOptions: {
+						show: {
+							resource: ['apiRequest'],
+							operation: ['request'],
+						},
+					},
+					options: [
+						{ name: 'DELETE', value: 'DELETE' },
+						{ name: 'GET', value: 'GET' },
+						{ name: 'PATCH', value: 'PATCH' },
+						{ name: 'POST', value: 'POST' },
+						{ name: 'PUT', value: 'PUT' },
+					],
+					default: 'GET',
+				},
+				{
+					displayName: 'Path',
+					name: 'apiPath',
+					type: 'string',
+					required: true,
+					default: '/lifecycle-manager/v1/clients',
+					description: 'Path relative to the configured ScalePad API base URL. Must start with /.',
+					displayOptions: {
+						show: {
+							resource: ['apiRequest'],
+							operation: ['request'],
+						},
+					},
+				},
+				{
+					displayName: 'Query Parameters JSON',
+					name: 'apiQueryJson',
+					type: 'json',
+					default: '{}',
+					description: 'JSON object sent as query parameters',
+					displayOptions: {
+						show: {
+							resource: ['apiRequest'],
+							operation: ['request'],
+						},
+					},
+				},
+				{
+					displayName: 'Body JSON',
+					name: 'apiBodyJson',
+					type: 'json',
+					default: '{}',
+					description: 'JSON object sent as the request body for methods that support a body',
+					displayOptions: {
+						show: {
+							resource: ['apiRequest'],
+							operation: ['request'],
+						},
+					},
+				},
+				// Core API operations and fields
 			...clientOperations,
 			...clientFields,
 			...contactOperations,
@@ -219,10 +331,33 @@ export class ScalePadCore implements INodeType {
 
 		const lmBasePath = '/lifecycle-manager/v1';
 
-		for (let i = 0; i < items.length; i++) {
-			try {
-				// ==================== CORE API: CLIENT ====================
-				if (resource === 'client') {
+			for (let i = 0; i < items.length; i++) {
+				try {
+					if (resource === 'apiRequest') {
+						const method = this.getNodeParameter('apiMethod', i) as 'DELETE' | 'GET' | 'PATCH' | 'POST' | 'PUT';
+						const path = normalizeApiPath(this.getNodeParameter('apiPath', i) as string);
+						const qs = parseJsonObject(
+							this.getNodeParameter('apiQueryJson', i, '{}') as string,
+							'Query Parameters JSON',
+							this.getNode(),
+						);
+						const body = parseJsonObject(
+							this.getNodeParameter('apiBodyJson', i, '{}') as string,
+							'Body JSON',
+							this.getNode(),
+						);
+						const responseData = await scalePadCoreApiRequest.call(this, method, path, body, qs);
+						if (Array.isArray(responseData)) {
+							responseData.forEach((item: IDataObject) => {
+								returnData.push({ json: item, pairedItem: { item: i } });
+							});
+						} else {
+							returnData.push({ json: responseData, pairedItem: { item: i } });
+						}
+					}
+
+					// ==================== CORE API: CLIENT ====================
+					if (resource === 'client') {
 					if (operation === 'get') {
 						const clientId = this.getNodeParameter('clientId', i) as string;
 						const responseData = await scalePadCoreApiRequest.call(
